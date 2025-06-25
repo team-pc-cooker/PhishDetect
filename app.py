@@ -1,4 +1,5 @@
 import re
+from datetime import datetime
 
 # Suspicious patterns
 suspicious_keywords = ['login', 'verify', 'update', 'secure', 'account', 'bank']
@@ -19,8 +20,20 @@ def is_suspicious(url):
 
     return reasons
 
+def log_to_file(url, reasons):
+    with open("scan_report.txt", "a") as report:
+        report.write(f"\nScan Time: {datetime.now()}\n")
+        report.write(f"URL: {url}\n")
+        if reasons:
+            report.write("Status: SUSPICIOUS\nReasons:\n")
+            for r in reasons:
+                report.write(f"- {r}\n")
+        else:
+            report.write("Status: SAFE\n")
+        report.write("-" * 40 + "\n")
+
 def main():
-    print("=== PhishDetect: Simple Phishing URL Scanner ===")
+    print("=== PhishDetect+: Phishing URL Scanner with Logging ===")
     url = input("Enter the URL to scan: ").strip()
 
     reasons = is_suspicious(url)
@@ -30,6 +43,9 @@ def main():
             print(f"- {reason}")
     else:
         print("\n[✓] This URL seems safe based on basic checks.")
+
+    log_to_file(url, reasons)
+    print("\nScan result saved to 'scan_report.txt'.")
 
 if __name__ == "__main__":
     main()
